@@ -6,6 +6,7 @@
 #include <stddef.h>
 #include <string.h>
 #include <stdbool.h>
+#include <errno.h>
 
 
 //Basic Commmand structure
@@ -17,6 +18,11 @@ typedef struct
     size_t cmd_size;        // In bytes
     size_t arg_count;
 }CCS_CMD;
+
+#ifdef LINUX 
+#include <dirent.h>
+#include <sys/stat.h>
+#endif
 
 //Function declarations
 
@@ -31,7 +37,8 @@ bool CCS_RemoveArgument(CCS_CMD* cmd,char* argument);
 bool CCS_Execute_Command(CCS_CMD* cmd,bool announce); //The bool is use to make the build system output the command
 
 //Helper Functions
-char** CCS_GetFilesInDir(CCS_CMD* cmd,int* count);
+char** CCS_GetFilesInDir(CCS_CMD* cmd,int* count,char* path);
+bool CCS_DoesFolderExist(CCS_CMD* cmd,char* path);
 
 //Inplementations
 
@@ -102,7 +109,7 @@ char** CCS_GetFilesInDir(CCS_CMD* cmd,int* count);
 
         size_t argumentLength = strlen(argument);
 
-        cmd->args[cmd->arg_count++] = (char*)malloc(argumentLength);
+        cmd->args[cmd->arg_count++] = (char*)malloc(argumentLength+1);
         if (cmd->args[cmd->arg_count-1] == NULL)
         {
             fprintf(stderr,"Failed to allocate memory for the argument string");
@@ -115,9 +122,9 @@ char** CCS_GetFilesInDir(CCS_CMD* cmd,int* count);
             fprintf(stderr,"Failed to increment the arglength array");
             return false;
         }
-        cmd->arglength[cmd->arg_count-1] = argumentLength-1;
+        cmd->arglength[cmd->arg_count-1] = argumentLength;
 
-        strncpy(cmd->args[cmd->arg_count-1],argument,argumentLength-1);
+        strncpy(cmd->args[cmd->arg_count-1],argument,argumentLength);
 
         return true;
     }
@@ -154,7 +161,7 @@ char** CCS_GetFilesInDir(CCS_CMD* cmd,int* count);
         commandbuffer[i] = '\0';
         if (announce)
         {
-            printf("\x1b[1mExecuting: \x1b[1;36m%s\x1b[1;39m\n",commandbuffer);
+            printf("\x1b[1m>> Executing: %s\x1b[1;39m\n",commandbuffer);
         }
 
         system(commandbuffer);
@@ -163,3 +170,21 @@ char** CCS_GetFilesInDir(CCS_CMD* cmd,int* count);
 
         return true;
     }
+
+#ifdef LINUX
+    bool CCS_DoesFolderExist(CCS_CMD* cmd,char* path)
+    {
+        struct stat s;
+        int err = stat(path,&s);
+        if (-1 == err)
+        {
+            if (ENONET == errno)
+            {
+                return false;
+            }
+            return false;
+            
+        }
+        return true;
+    }
+    #endif
