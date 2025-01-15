@@ -183,7 +183,7 @@ bool CCS_DoesFolderExist(CCS_CMD* cmd,char* path);
                 for (size_t j = argi; j < cmd->arg_count -1; j++)
                 {
                     cmd->args[j] = cmd->args[j+1];
-                    cmd->arglength[j] = cmd->args[j+1];
+                    cmd->arglength[j] = cmd->arglength[j+1];
                 }
 
                 cmd->arg_count--;
