@@ -171,6 +171,27 @@ bool CCS_DoesFolderExist(CCS_CMD* cmd,char* path);
         return true;
     }
 
+    bool CCS_RemoveArgument(CCS_CMD* cmd,char* argument)
+    {
+        for (size_t argi = 0; argi < cmd->arg_count; argi++)
+        {
+            if (!strcmp(cmd->args[argi],argument))
+            {
+                free(cmd->args[argi]);
+
+                //Reorder the arrays
+                for (size_t j = argi; j < cmd->arg_count -1; j++)
+                {
+                    cmd->args[j] = cmd->args[j+1];
+                    cmd->arglength[j] = cmd->args[j+1];
+                }
+
+                cmd->arg_count--;
+                
+            }
+        }
+    }
+
 #ifdef LINUX
     bool CCS_DoesFolderExist(CCS_CMD* cmd,char* path)
     {
