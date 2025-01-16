@@ -41,7 +41,7 @@ char** CCS_GetFilesInDir(CCS_CMD* cmd,int* count,char* path);
 bool CCS_DoesFolderExist(CCS_CMD* cmd,char* path);
 
 //Inplementations
-
+#ifdef CCS_IMPL
     CCS_CMD* CCS_CreateCommand()
     {
         CCS_CMD* cmd = (CCS_CMD*)malloc(sizeof(CCS_CMD));
@@ -191,8 +191,7 @@ bool CCS_DoesFolderExist(CCS_CMD* cmd,char* path);
             }
         }
     }
-
-#ifdef LINUX
+    #ifdef LINUX
     bool CCS_DoesFolderExist(CCS_CMD* cmd,char* path)
     {
         struct stat s;
@@ -209,3 +208,4 @@ bool CCS_DoesFolderExist(CCS_CMD* cmd,char* path);
         return true;
     }
     #endif
+#endif
