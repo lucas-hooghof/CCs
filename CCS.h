@@ -194,16 +194,10 @@ bool CCS_DoesFolderExist(CCS_CMD* cmd,char* path);
     #ifdef LINUX
     bool CCS_DoesFolderExist(CCS_CMD* cmd,char* path)
     {
-        struct stat s;
-        int err = stat(path,&s);
-        if (-1 == err)
+        DIR* dir = opendir(path);
+        if (dir == NULL)
         {
-            if (ENONET == errno)
-            {
-                return false;
-            }
             return false;
-            
         }
         return true;
     }
