@@ -199,39 +199,54 @@ bool CCS_DoesFolderExist(CCS_CMD* cmd,char* path);
         {
             return false;
         }
+        closedir(dir);
         return true;
     }
     char** CCS_GetFilesInDir(CCS_CMD* cmd,int* count,char* path)
     {
         DIR* dir = opendir(path);
+        if (dir == NULL)
+        {
+            printf("Failed to open a directory\n");
+            return NULL;
+        }
         struct dirent* direntry;
         char** files = NULL;
-        while (direntry = readdir(dir))
+        while ((direntry = readdir(dir)) != NULL)
         {
-            if (direntry == NULL)
+            
+            if (!strcmp(direntry->d_name,"..") || !strcmp(direntry->d_name,"."))
             {
-                break;
+                continue;
             }
-
             if (direntry->d_type == DT_DIR)
             {
                 int newcount = 0;
                 char** inner = CCS_GetFilesInDir(cmd,&newcount,direntry->d_name);
-                files = (char**) realloc(files,*count + newcount);
+                files = (char**) realloc(files,*count + newcount * sizeof(char*));
                 for (size_t innercount = *count; innercount < newcount + *count; innercount++)
                 {
                     files[innercount] = (char*)malloc(strlen(inner[innercount - *count]) + 1);
                     strcpy(files[innercount],inner[innercount - *count]);
                 }
+                *count += newcount;
             }
             else if (direntry->d_type == DT_REG)
             {
-                *count++;
-                files = (char**)realloc(files,*count * sizeof(char*));
-                files[*count-1] = (char*)malloc(strlen(direntry->d_name) + 1);
-                strcpy(files[*count-1],direntry->d_name);
+                if (*count == 0)
+                {
+                    files = (char**)malloc(sizeof(char*));
+                }
+                else {
+                    files = (char**)realloc(files,(*count+1) * sizeof(char*));
+                }
+                files[*count] = (char*)malloc(strlen(direntry->d_name)+1);
+                strcpy(files[*count],direntry->d_name);
+                *count += 1;
             }
         }
+
+        closedir(dir);
 
         return files;
     }   
