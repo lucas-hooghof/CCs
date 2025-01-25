@@ -212,7 +212,7 @@ bool CCS_DoesFolderExist(CCS_CMD* cmd,char* path);
         DIR* dir = opendir(path);
         struct dirent* direntry;
         char** files = NULL;
-        while (direntry = readdir(direntry))
+        while (direntry = readdir(dir))
         {
             if (direntry == NULL)
             {
