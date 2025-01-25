@@ -207,5 +207,40 @@ bool CCS_DoesFolderExist(CCS_CMD* cmd,char* path);
         }
         return true;
     }
+    char** CCS_GetFilesInDir(CCS_CMD* cmd,int* count,char* path)
+    {
+        DIR* dir = opendir(path);
+        struct dirent* direntry;
+        char** files = NULL;
+        while (direntry = readdir(direntry))
+        {
+            if (direntry == NULL)
+            {
+                break;
+            }
+
+            if (direntry->d_type == DT_DIR)
+            {
+                int newcount = 0;
+                char** inner = CCS_GetFilesInDir(cmd,&newcount,direntry->d_name);
+                files = (char**) realloc(files,*count + newcount);
+                for (size_t innercount = *count; innercount < newcount + *count; innercount++)
+                {
+                    files[innercount] = (char*)malloc(strlen(inner[innercount - *count]) + 1);
+                    strcpy(files[innercount],inner[innercount - *count]);
+                }
+            }
+            else if (direntry->d_type == DT_REG)
+            {
+                *count++;
+                files = (char**)realloc(files,*count * sizeof(char*));
+                files[*count-1] = (char*)malloc(strlen(direntry->d_name) + 1);
+                strcpy(files[*count-1],direntry->d_name);
+            }
+        }
+
+        return files;
+    }   
+
     #endif
 #endif
