@@ -240,8 +240,10 @@ bool CCS_DoesFolderExist(CCS_CMD* cmd,char* path);
                 else {
                     files = (char**)realloc(files,(*count+1) * sizeof(char*));
                 }
-                files[*count] = (char*)malloc(strlen(direntry->d_name)+1);
-                strcpy(files[*count],direntry->d_name);
+                files[*count] = (char*)malloc(strlen(direntry->d_name)+1+strlen(path)+1);
+                strcpy(files[*count],path);
+                strncat(files[*count],"/",1);
+                strcat(files[*count],direntry->d_name);
                 *count += 1;
             }
         }
