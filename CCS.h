@@ -24,6 +24,7 @@ typedef struct
 #include <sys/stat.h>
 #endif
 
+
 //Function declarations
 
 //Command creation/destruction
