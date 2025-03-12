@@ -347,7 +347,7 @@ extern char* Current_Assembler;
     void CCS_RemoveDirectory(char* directory,bool announce)
     {   
         CCS_CMD* cmd = CCS_CreateCommand();
-        CCS_SetCmdCommand(cmd,"rmdir");
+        CCS_SetCmdCommand(cmd,"rm");
         CCS_AddArgument(cmd,"-rf");
         CCS_AddArgument(cmd,directory);
 
