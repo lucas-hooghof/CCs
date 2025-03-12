@@ -27,18 +27,49 @@ typedef struct
 
 //Function declarations
 
-//Command creation/destruction
+
+/// @brief CCS_CreateCommand used to make a command pointer-structure
 CCS_CMD* CCS_CreateCommand();
+
+/// @brief CCS_DestroyCommand used to destroy a command pointer-structure
+/// @param cmd Pointer to a command structure
 void CCS_DestroyCommand(CCS_CMD* cmd);
 
-//CMD configurations
+/// @brief CCS_SetCmdCommand used to set the command of cmd to be used in the "CCS_Execute_Command" function
+/// @param cmd Pointer to a command structure
+/// @param command The name of the command
+/// @return Returns if the function was executed correctly
 bool CCS_SetCmdCommand(CCS_CMD* cmd,char* command);
-bool CCS_AddArgument(CCS_CMD* cmd,char* argument);
-bool CCS_RemoveArgument(CCS_CMD* cmd,char* argument);
-bool CCS_Execute_Command(CCS_CMD* cmd,bool announce); //The bool is use to make the build system output the command
 
-//Helper Functions
+/// @brief CCS_AddArgument adds a argument to the command structure to be used in the "CCS_Execute_Command" function
+/// @param cmd Pointer to a command structure
+/// @param argument A Argument to be added to the argument list
+/// @return Returns if the function was executed correctly
+bool CCS_AddArgument(CCS_CMD* cmd,char* argument);
+
+/// @brief CCS_RemoveArgument is used to remove a argument from the argument list
+/// @param cmd Pointer to a command structure
+/// @param argument A Argument to remove from  argument list
+/// @return Returns if the function was executed correctly
+bool CCS_RemoveArgument(CCS_CMD* cmd,char* argument);
+
+/// @brief CCS_Execute_Command is used to execute a command 
+/// @param cmd Pointer to a command structure
+/// @param announce Make the command get outputted to the console
+/// @return Returns if the function was executed correctly
+bool CCS_Execute_Command(CCS_CMD* cmd,bool announce); 
+
+/// @brief CCS_GetFilesInDir is used to get all the files in a directory with depth
+/// @param cmd Pointer to a command structure
+/// @param count A interger that gets filled with the amount of found files
+/// @param path The path to the files needed to be found
+/// @return Returns if the function was executed correctly
 char** CCS_GetFilesInDir(CCS_CMD* cmd,int* count,char* path);
+
+/// @brief CCS_DoesFolderExist is used to check if a folder exists
+/// @param cmd Pointer to a command structure
+/// @param path The path to the directory
+/// @return Returns if the function was executed correctly
 bool CCS_DoesFolderExist(CCS_CMD* cmd,char* path);
 
 //Inplementations
@@ -256,3 +287,47 @@ bool CCS_DoesFolderExist(CCS_CMD* cmd,char* path);
 
     #endif
 #endif
+
+
+/// @brief CCS_CreateDirectory is used to create a directory
+/// @param directory The directory to be created
+/// @param announce If the command should be outputted to the Console
+/// @attention CCS_CreateDirectory cant make directories with depth use "CCS_CreateDirectoryDepth" for that
+void CCS_CreateDirectory(char* directory,bool announce)
+{
+    CCS_CMD* cmd = CCS_CreateCommand();
+    CCS_SetCmdCommand(cmd,"mkdir");
+    CCS_AddArgument(cmd,directory);
+
+    CCS_Execute_Command(cmd,announce);
+    CCS_DestroyCommand(cmd);
+}
+
+/// @brief CCS_CreateDirectoryDepth is used to create a directory with depth like "/dir/dir/dir"
+/// @param directory The directory to be created
+/// @param announce  If the command should be outputted to the Console
+void CCS_CreateDirectoryDepth(char* directory,bool announce)
+{
+    CCS_CMD* cmd = CCS_CreateCommand();
+    CCS_SetCmdCommand(cmd,"mkdir");
+    CCS_AddArgument(cmd,"-p");
+    CCS_AddArgument(cmd,directory);
+
+    CCS_Execute_Command(cmd,announce);
+    CCS_DestroyCommand(cmd);
+}
+
+/// @brief CCS_RemoveDirectory is used to remove a directory
+/// @param directory The directory to be removed
+/// @param announce If the command should be outputted to the Console
+/// @attention This can be used with depth
+void CCS_RemoveDirectory(char* directory,bool announce)
+{
+    CCS_CMD* cmd = CCS_CreateCommand();
+    CCS_SetCmdCommand(cmd,"rmdir");
+    CCS_AddArgument(cmd,"-rf");
+    CCS_AddArgument(cmd,directory);
+
+    CCS_Execute_Command(cmd,announce);
+    CCS_DestroyCommand(cmd);
+}
