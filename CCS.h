@@ -94,6 +94,13 @@ void CCS_RemoveDirectory(char* directory,bool announce);
 /// @param to The string to change it to
 void CCS_SetCurrent(char** Which,char* to);
 
+/// @brief CCS_AssembleFile is a helper function used to assemble a file into a object file
+/// @param file The input asm file
+/// @param flags The flags needed for it
+/// @param output The output place and name
+/// @param announce If set the command will be send out to the console
+void CCS_AssembleFile(char* file,char* flags,char* output,bool announce);
+
 extern char* Current_Ccompiler;
 extern char* Current_CPPcompiler;
 extern char* Current_Linker;
@@ -352,6 +359,18 @@ extern char* Current_Assembler;
         if (*Which != NULL) {free(*Which);}
         *Which = (char*)malloc(strlen(to)+1);
         strncpy(*Which,to,strlen(to)+1);
+    }
+
+    void CCS_AssembleFile(char* file,char* flags,char* output,bool announce)
+    {
+        CCS_CMD* command = CCS_CreateCommand();
+        CCS_SetCmdCommand(command,Current_Assembler);
+        CCS_AddArgument(command,file);
+        CCS_AddArgument(command,flags);
+        CCS_AddArgument(command,output);
+
+        CCS_Execute_Command(command,announce);
+        CCS_DestroyCommand(command);
     }
 #endif
 
