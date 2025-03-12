@@ -347,11 +347,11 @@ extern char* Current_Assembler;
         CCS_Execute_Command(cmd,announce);
         CCS_DestroyCommand(cmd);
     }
-    void CCS_SetCurrent(char* Which,char* to)
+    void CCS_SetCurrent(char** Which,char* to)
     {
-        if (Which != NULL) {free(Which);}
-        Which = (char*)malloc(strlen(to)+1);
-        strncpy(Which,to,strlen(to)+1);
+        if (*Which != NULL) {free(*Which);}
+        *Which = (char*)malloc(strlen(to)+1);
+        strncpy(*Which,to,strlen(to)+1);
     }
 #endif
 
