@@ -92,7 +92,7 @@ void CCS_RemoveDirectory(char* directory,bool announce);
 /// @brief CCS_SetCurrent is used to set Build System Vars
 /// @param Which The string to change
 /// @param to The string to change it to
-void CCS_SetCurrent(char* Which,char* to);
+void CCS_SetCurrent(char** Which,char* to);
 
 extern char* Current_Ccompiler;
 extern char* Current_CPPcompiler;
