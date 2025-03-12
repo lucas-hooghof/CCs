@@ -350,8 +350,8 @@ extern char* Current_Assembler;
     void CCS_SetCurrent(char* Which,char* to)
     {
         if (Which != NULL) {free(Which);}
-        Which = (char*)malloc(strlen(to));
-        strncpy(Which,to,strlen(to));
+        Which = (char*)malloc(strlen(to)+1);
+        strncpy(Which,to,strlen(to)+1);
     }
 #endif
 
