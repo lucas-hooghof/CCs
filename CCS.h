@@ -72,8 +72,17 @@ char** CCS_GetFilesInDir(CCS_CMD* cmd,int* count,char* path);
 /// @return Returns if the function was executed correctly
 bool CCS_DoesFolderExist(CCS_CMD* cmd,char* path);
 
+extern char* Current_Ccompiler;
+extern char* Current_CPPcompiler;
+extern char* Current_Linker;
+extern char* Current_Assembler;
+
 //Inplementations
 #ifdef CCS_IMPL
+    char* Current_Ccompiler = NULL;
+    char* Current_CPPcompiler = NULL;
+    char* Current_Linker = NULL;
+    char* Current_Assembler = NULL;
     CCS_CMD* CCS_CreateCommand()
     {
         CCS_CMD* cmd = (CCS_CMD*)malloc(sizeof(CCS_CMD));
@@ -330,4 +339,14 @@ void CCS_RemoveDirectory(char* directory,bool announce)
 
     CCS_Execute_Command(cmd,announce);
     CCS_DestroyCommand(cmd);
+}
+
+/// @brief CCS_SetCurrent is used to set Build System Vars
+/// @param Which The string to change
+/// @param to The string to change it to
+void CCS_SetCurrent(char* Which,char* to)
+{
+    if (Which != NULL) {free(Which);}
+    Which = (char*)malloc(strlen(to));
+    strncpy(Which,to,strlen(to));
 }
