@@ -72,6 +72,28 @@ char** CCS_GetFilesInDir(CCS_CMD* cmd,int* count,char* path);
 /// @return Returns if the function was executed correctly
 bool CCS_DoesFolderExist(CCS_CMD* cmd,char* path);
 
+/// @brief CCS_CreateDirectory is used to create a directory
+/// @param directory The directory to be created
+/// @param announce If the command should be outputted to the Console
+/// @attention CCS_CreateDirectory cant make directories with depth use "CCS_CreateDirectoryDepth" for that
+void CCS_CreateDirectory(char* directory,bool announce);
+
+/// @brief CCS_CreateDirectoryDepth is used to create a directory with depth like "/dir/dir/dir"
+/// @param directory The directory to be created
+/// @param announce  If the command should be outputted to the Console
+void CCS_CreateDirectoryDepth(char* directory,bool announce);
+
+/// @brief CCS_RemoveDirectory is used to remove a directory
+/// @param directory The directory to be removed
+/// @param announce If the command should be outputted to the Console
+/// @attention This can be used with depth
+void CCS_RemoveDirectory(char* directory,bool announce);
+
+/// @brief CCS_SetCurrent is used to set Build System Vars
+/// @param Which The string to change
+/// @param to The string to change it to
+void CCS_SetCurrent(char* Which,char* to);
+
 extern char* Current_Ccompiler;
 extern char* Current_CPPcompiler;
 extern char* Current_Linker;
@@ -295,58 +317,41 @@ extern char* Current_Assembler;
     }   
 
     #endif
+    void CCS_CreateDirectory(char* directory,bool announce)
+    {   
+        CCS_CMD* cmd = CCS_CreateCommand();
+        CCS_SetCmdCommand(cmd,"mkdir");
+        CCS_AddArgument(cmd,directory);
+
+        CCS_Execute_Command(cmd,announce);
+        CCS_DestroyCommand(cmd);
+    }
+
+    void CCS_CreateDirectoryDepth(char* directory,bool announce)
+    {
+        CCS_CMD* cmd = CCS_CreateCommand();
+        CCS_SetCmdCommand(cmd,"mkdir");
+        CCS_AddArgument(cmd,"-p");
+        CCS_AddArgument(cmd,directory);
+
+        CCS_Execute_Command(cmd,announce);
+        CCS_DestroyCommand(cmd);
+    }
+    void CCS_RemoveDirectory(char* directory,bool announce)
+    {   
+        CCS_CMD* cmd = CCS_CreateCommand();
+        CCS_SetCmdCommand(cmd,"rmdir");
+        CCS_AddArgument(cmd,"-rf");
+        CCS_AddArgument(cmd,directory);
+
+        CCS_Execute_Command(cmd,announce);
+        CCS_DestroyCommand(cmd);
+    }
+    void CCS_SetCurrent(char* Which,char* to)
+    {
+        if (Which != NULL) {free(Which);}
+        Which = (char*)malloc(strlen(to));
+        strncpy(Which,to,strlen(to));
+    }
 #endif
 
-
-/// @brief CCS_CreateDirectory is used to create a directory
-/// @param directory The directory to be created
-/// @param announce If the command should be outputted to the Console
-/// @attention CCS_CreateDirectory cant make directories with depth use "CCS_CreateDirectoryDepth" for that
-void CCS_CreateDirectory(char* directory,bool announce)
-{
-    CCS_CMD* cmd = CCS_CreateCommand();
-    CCS_SetCmdCommand(cmd,"mkdir");
-    CCS_AddArgument(cmd,directory);
-
-    CCS_Execute_Command(cmd,announce);
-    CCS_DestroyCommand(cmd);
-}
-
-/// @brief CCS_CreateDirectoryDepth is used to create a directory with depth like "/dir/dir/dir"
-/// @param directory The directory to be created
-/// @param announce  If the command should be outputted to the Console
-void CCS_CreateDirectoryDepth(char* directory,bool announce)
-{
-    CCS_CMD* cmd = CCS_CreateCommand();
-    CCS_SetCmdCommand(cmd,"mkdir");
-    CCS_AddArgument(cmd,"-p");
-    CCS_AddArgument(cmd,directory);
-
-    CCS_Execute_Command(cmd,announce);
-    CCS_DestroyCommand(cmd);
-}
-
-/// @brief CCS_RemoveDirectory is used to remove a directory
-/// @param directory The directory to be removed
-/// @param announce If the command should be outputted to the Console
-/// @attention This can be used with depth
-void CCS_RemoveDirectory(char* directory,bool announce)
-{
-    CCS_CMD* cmd = CCS_CreateCommand();
-    CCS_SetCmdCommand(cmd,"rmdir");
-    CCS_AddArgument(cmd,"-rf");
-    CCS_AddArgument(cmd,directory);
-
-    CCS_Execute_Command(cmd,announce);
-    CCS_DestroyCommand(cmd);
-}
-
-/// @brief CCS_SetCurrent is used to set Build System Vars
-/// @param Which The string to change
-/// @param to The string to change it to
-void CCS_SetCurrent(char* Which,char* to)
-{
-    if (Which != NULL) {free(Which);}
-    Which = (char*)malloc(strlen(to));
-    strncpy(Which,to,strlen(to));
-}
