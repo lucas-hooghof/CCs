@@ -434,7 +434,7 @@ extern char* Current_Assembler;
         size_t cmdlength = strlen("dd if=/dev/zero ") + strlen("of=") + strlen(name) + strlen(" bs=1 count=") + 20;
         char* stringcmd = (char*)malloc(cmdlength);
         if (!stringcmd) {printf("Cant create file!\n"); exit(EXIT_FAILURE);}
-        snprintf(stringcmd,cmdlength,"dd if=/dev/zero of=%s bs=1 count=%d",name,size);
+        snprintf(stringcmd,cmdlength,"dd if=/dev/zero of=%s bs=1 count=%ld",name,size);
 
         system(stringcmd);
 
