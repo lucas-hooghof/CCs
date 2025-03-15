@@ -100,7 +100,8 @@ void CCS_SetCurrent(char** Which,char* to);
 /// @param output The output place and name
 /// @param announce If set the command will be send out to the console
 /// @attention !!! Dont add "-o" to the flags !!!
-void CCS_AssembleFile(char* file,char* flags,char* output,bool announce);
+/// @return This function returns the output string
+char* CCS_AssembleFile(char* file,char* flags,char* output,bool announce);
 
 /// @brief CCS_LinkFile is a helper function used to link a file
 /// @param file The input object file
@@ -108,7 +109,8 @@ void CCS_AssembleFile(char* file,char* flags,char* output,bool announce);
 /// @param output The output place and name
 /// @param announce If set the command will be send out to the console
 /// @attention This function takes in 1 file and !!! Dont add "-o" to the flags !!!
-void CCS_LinkFile(char* file,char* flags,char* output,bool announce);
+/// @return This function returns the output string
+char* CCS_LinkFile(char* file,char* flags,char* output,bool announce);
 
 /// @brief CCS_WriteDataToFile is a helper function used to Write Data to a file like a MBR
 /// @param Data The pointer to the data
@@ -383,7 +385,7 @@ extern char* Current_Assembler;
         strncpy(*Which,to,strlen(to)+1);
     }
 
-    void CCS_AssembleFile(char* file,char* flags,char* output,bool announce)
+    char* CCS_AssembleFile(char* file,char* flags,char* output,bool announce)
     {
         CCS_CMD* command = CCS_CreateCommand();
         CCS_SetCmdCommand(command,Current_Assembler);
@@ -394,9 +396,11 @@ extern char* Current_Assembler;
 
         CCS_Execute_Command(command,announce);
         CCS_DestroyCommand(command);
+
+        return output;
     }
 
-    void CCS_LinkFile(char* file,char* flags,char* output,bool announce)
+    char* CCS_LinkFile(char* file,char* flags,char* output,bool announce)
     {
         CCS_CMD* command = CCS_CreateCommand();
         CCS_SetCmdCommand(command,Current_Linker);
@@ -407,6 +411,8 @@ extern char* Current_Assembler;
 
         CCS_Execute_Command(command,announce);
         CCS_DestroyCommand(command);
+
+        return output;
     }
 
     void CCS_WriteDataToFile(void* Data,size_t size,size_t offset,char* file,bool announce)
