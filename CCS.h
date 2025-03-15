@@ -99,7 +99,29 @@ void CCS_SetCurrent(char** Which,char* to);
 /// @param flags The flags needed for it
 /// @param output The output place and name
 /// @param announce If set the command will be send out to the console
+/// @attention !!! Dont add "-o" to the flags !!!
 void CCS_AssembleFile(char* file,char* flags,char* output,bool announce);
+
+/// @brief CCS_LinkFile is a helper function used to link a file
+/// @param file The input object file
+/// @param flags The flags needed for it
+/// @param output The output place and name
+/// @param announce If set the command will be send out to the console
+/// @attention This function takes in 1 file and !!! Dont add "-o" to the flags !!!
+void CCS_LinkFile(char* file,char* flags,char* output,bool announce);
+
+/// @brief CCS_WriteDataToFile is a helper function used to Write Data to a file like a MBR
+/// @param Data The pointer to the data
+/// @param size The size of the data in bytes
+/// @param offset The offset into the file in bytes
+/// @param file The path to the file
+/// @param announce If set the command will be send out to the console
+void CCS_WriteDataToFile(void* Data,size_t size,size_t offset,char* file,bool announce);
+
+/// @brief CCS_CreateFile is a helper function used to create empty files
+/// @param name This is the path to where and what it should be called
+/// @param size This is the wanted size of the file
+void CCS_CreateFile(char* name,size_t size);
 
 extern char* Current_Ccompiler;
 extern char* Current_CPPcompiler;
@@ -367,10 +389,50 @@ extern char* Current_Assembler;
         CCS_SetCmdCommand(command,Current_Assembler);
         CCS_AddArgument(command,file);
         CCS_AddArgument(command,flags);
+        CCS_AddArgument(command,"-o");
         CCS_AddArgument(command,output);
 
         CCS_Execute_Command(command,announce);
         CCS_DestroyCommand(command);
+    }
+
+    void CCS_LinkFile(char* file,char* flags,char* output,bool announce)
+    {
+        CCS_CMD* command = CCS_CreateCommand();
+        CCS_SetCmdCommand(command,Current_Linker);
+        CCS_AddArgument(command,file);
+        CCS_AddArgument(command,flags);
+        CCS_AddArgument(command,"-o");
+        CCS_AddArgument(command,output);
+
+        CCS_Execute_Command(command,announce);
+        CCS_DestroyCommand(command);
+    }
+
+    void CCS_WriteDataToFile(void* Data,size_t size,size_t offset,char* file,bool announce)
+    {
+        if (announce == true)
+        {
+            printf("Writing Data to %s \n",file);
+        }
+
+        FILE* filep = fopen(file,"wb");
+        fseek(filep,offset,SEEK_SET);
+        fwrite(Data,1,size,filep);
+
+        fclose(filep);
+    }
+
+    void CCS_CreateFile(char* name,size_t size)
+    {
+        size_t cmdlength = strlen("dd if=/dev/zero ") + strlen("of=") + strlen(name) + strlen(" bs=1 count=") + 20;
+        char* stringcmd = (char*)malloc(cmdlength);
+        if (!stringcmd) {printf("Cant create file!\n"); exit(EXIT_FAILURE);}
+        snprintf(stringcmd,cmdlength,"dd if=/dev/zero of=%s bs=1 count=%d",name,size);
+
+        system(stringcmd);
+
+        free(stringcmd);
     }
 #endif
 
