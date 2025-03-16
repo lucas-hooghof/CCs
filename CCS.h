@@ -422,7 +422,12 @@ extern char* Current_Assembler;
             printf("Writing Data to %s \n",file);
         }
 
-        FILE* filep = fopen(file,"wb");
+        FILE* filep = fopen(file,"rb+");
+        if(!filep)
+        {
+            printf("Failed to open file");
+            exit(1);
+        }
         fseek(filep,offset,SEEK_SET);
         fwrite(Data,1,size,filep);
 
