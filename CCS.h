@@ -345,10 +345,19 @@ extern char* Current_Assembler;
         closedir(dir);
 
         return files;
-    }   
+    }  
+    void CCS_CreateFile(char* name,size_t size)
+    {
+        size_t cmdlength = strlen("dd if=/dev/zero ") + strlen("of=") + strlen(name) + strlen(" bs=1 count=") + 20;
+        char* stringcmd = (char*)malloc(cmdlength);
+        if (!stringcmd) {printf("Cant create file!\n"); exit(EXIT_FAILURE);}
+        snprintf(stringcmd,cmdlength,"dd if=/dev/zero of=%s bs=1 count=%ld",name,size);
 
-    #endif
-    void CCS_CreateDirectory(char* directory,bool announce)
+        system(stringcmd);
+
+        free(stringcmd);
+    }
+     void CCS_CreateDirectory(char* directory,bool announce)
     {   
         CCS_CMD* cmd = CCS_CreateCommand();
         CCS_SetCmdCommand(cmd,"mkdir");
@@ -378,6 +387,8 @@ extern char* Current_Assembler;
         CCS_Execute_Command(cmd,announce);
         CCS_DestroyCommand(cmd);
     }
+    #endif
+   
     void CCS_SetCurrent(char** Which,char* to)
     {
         if (*Which != NULL) {free(*Which);}
@@ -434,16 +445,6 @@ extern char* Current_Assembler;
         fclose(filep);
     }
 
-    void CCS_CreateFile(char* name,size_t size)
-    {
-        size_t cmdlength = strlen("dd if=/dev/zero ") + strlen("of=") + strlen(name) + strlen(" bs=1 count=") + 20;
-        char* stringcmd = (char*)malloc(cmdlength);
-        if (!stringcmd) {printf("Cant create file!\n"); exit(EXIT_FAILURE);}
-        snprintf(stringcmd,cmdlength,"dd if=/dev/zero of=%s bs=1 count=%ld",name,size);
 
-        system(stringcmd);
-
-        free(stringcmd);
-    }
 #endif
 
